@@ -1,16 +1,31 @@
-# This is a sample Python script.
+import streamlit as st
+import pandas as pd
+import investor_analysis as inv
+import overall_analysis as oa
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+st.set_page_config(layout='wide', page_title='Startup Analysis')
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+df = pd.read_csv('Startup_V01.csv', parse_dates=['Date'])
+st.sidebar.markdown('# Indian Startup Funding')
+# st.dataframe(df.head())
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+st.sidebar.markdown('## Created by Vamshi Munukuntla')
+st.sidebar.title('')
+option = st.sidebar.radio('Analysis by', ['Overall Analysis', 'Startup', 'Investor'])
+
+if option == 'Overall Analysis':
+    btn0 = st.sidebar.button('Show Overall Analysis')
+    if btn0:
+        oa.load_overall_analysis()
+elif option == 'Startup':
+    st.title('Startup Analysis')
+    startup = st.sidebar.selectbox('Select startup', df['Startup'].sort_values().unique().tolist())
+    btn1 = st.sidebar.button(f'Click here to know more about ***{startup}***')
+else:
+    st.title('Investor Analysis')
+    unique_investors = sorted(set(df['Investors'].str.split(',').sum()))
+    selected_investor = st.sidebar.selectbox('Select startup', [item.strip() for item in unique_investors][1:])
+    btn2 = st.sidebar.button(f'Click here to know more about ***{selected_investor}***')
+    if btn2:
+        inv.load_investor_details(selected_investor)
